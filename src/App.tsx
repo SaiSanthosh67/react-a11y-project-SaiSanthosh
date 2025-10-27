@@ -52,7 +52,7 @@ const App = () => {
               fontSize: '16px',
               fontFamily: 'inherit'
             }}
-            placeholder='Enter numbers separated by commas (e.g., "1,2,3")'
+            placeholder='Enter numbers separated by commas (e.g., 1,2,3)'
             value={input}
             onChange={(e) => setInput(e.target.value)}
             aria-describedby={error ? "errorHelp" : "inputHelp"}
