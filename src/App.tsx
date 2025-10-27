@@ -55,7 +55,8 @@ const App = () => {
             placeholder='Enter numbers separated by commas (e.g., 1,2,3)'
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            aria-describedby={error ? "errorHelp" : "inputHelp"}
+            aria-describedby={error ? "errorHelp" : undefined}
+            aria-invalid={error ? true : false}
           />
         </div>
 
