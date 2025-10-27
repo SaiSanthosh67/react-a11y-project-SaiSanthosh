@@ -47,14 +47,18 @@ const App = () => {
               minHeight: '100px',
               padding: '12px',
               borderRadius: '4px',
-              border: '1px solid #ccc',
+              border: error ? '2px solid #A5040C' : '1px solid #ccc',
               color: '#444',
               fontSize: '16px',
               fontFamily: 'inherit'
             }}
             placeholder='Enter numbers separated by commas (e.g., 1,2,3)'
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              if (error) setError(null);
+              if (result !== null) setResult(null);
+            }}
             aria-describedby={error ? "errorHelp" : undefined}
             aria-invalid={error ? true : false}
           />
@@ -63,12 +67,6 @@ const App = () => {
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px' }}>
           <button
             onClick={handleCalculate}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleCalculate();
-              }
-            }}
             style={{
               padding: '12px 24px',
               backgroundColor: '#005079',
@@ -104,8 +102,7 @@ const App = () => {
 
         {error && (
           <div 
-            role="alert" 
-            aria-live="assertive" 
+            role="alert"
             id="errorHelp"
             style={{
               color: '#A5040C',
