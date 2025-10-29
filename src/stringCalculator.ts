@@ -1,34 +1,60 @@
-export class StringCalculator {
-    add(numbers: string): number {
-        if (!numbers.trim()) {
-            throw new Error('Please enter numbers before calculating');
-        }
+export class CalculatorError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CalculatorError";
+  }
+}
 
-        const tokens = numbers
-            .split(',')
-            .map(t => t.trim())
-            .filter(t => t !== '');
+export function add(numbers: string): number {
+  if (!numbers || numbers.trim() === "") {
+    return 0;
+  }
 
-        const numberArray: number[] = [];
-        const invalidNumbers: string[] = [];
-        
-        for (const token of tokens) {
-            const parsed = parseInt(token, 10);
-            if (Number.isNaN(parsed)) {
-                invalidNumbers.push(token);
-            } else {
-                numberArray.push(parsed);
-            }
-        }
+  const trimmedInput = numbers.trim();
+  const parts = trimmedInput.split(",");
 
-        if (invalidNumbers.length > 0) {
-            const invalidList = invalidNumbers.map(n => `"${n}"`).join(', ');
-            const errorMessage = invalidNumbers.length === 1
-                ? `Invalid character: ${invalidList}`
-                : `Invalid characters: ${invalidList}`;
-            throw new Error(errorMessage);
-        }
+  if (parts.length === 0) {
+    return 0;
+  }
 
-        return numberArray.reduce((sum, num) => sum + num, 0);
+  const numArray: number[] = [];
+  const invalidInputs: string[] = [];
+
+  parts.forEach((part, index) => {
+    const trimmedPart = part.trim();
+
+    if (trimmedPart === "") {
+      return;
     }
+
+    const numberRegex = /^-?\d+(\.\d+)?$/;
+
+    if (!numberRegex.test(trimmedPart)) {
+      invalidInputs.push(`"${trimmedPart}" at position ${index + 1}`);
+      return;
+    }
+
+    const parsed = parseFloat(trimmedPart);
+    numArray.push(parsed);
+  });
+
+  if (invalidInputs.length > 0) {
+    throw new CalculatorError(
+      `Invalid input detected: ${invalidInputs.join(
+        ", "
+      )}. Please enter only numbers separated by commas.`
+    );
+  }
+
+  if (numArray.length === 0) {
+    throw new CalculatorError("No valid numbers found in input.");
+  }
+
+  const sum = numArray.reduce((total, num) => total + num, 0);
+
+  if (!isFinite(sum)) {
+    throw new CalculatorError("Calculation resulted in an invalid number.");
+  }
+
+  return sum;
 }

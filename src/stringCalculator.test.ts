@@ -1,73 +1,57 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { StringCalculator } from './stringCalculator';
+import { describe, it, expect } from "vitest";
+import { add, CalculatorError } from "./stringCalculator";
 
-describe('StringCalculator', () => {
-    let calculator: StringCalculator;
-
-    beforeEach(() => {
-        calculator = new StringCalculator();
+describe("String Calculator", () => {
+  describe("Basic functionality", () => {
+    it("should return 0 for empty string", () => {
+      expect(add("")).toBe(0);
     });
 
-    describe('add method', () => {
-        it('should throw error for empty string', () => {
-            expect(() => calculator.add('')).toThrow('Please enter numbers before calculating');
-        });
-
-        it('should throw error for whitespace only', () => {
-            expect(() => calculator.add('   ')).toThrow('Please enter numbers before calculating');
-        });
-
-        it('should return the number for a single number', () => {
-            expect(calculator.add('1')).toBe(1);
-        });
-
-        it('should handle whitespace around numbers', () => {
-            expect(calculator.add(' 1 ')).toBe(1);
-        });
-
-        it('should add two numbers separated by a comma', () => {
-            expect(calculator.add('1,2')).toBe(3);
-        });
-
-        it('should add multiple numbers', () => {
-            expect(calculator.add('1,2,3,4,5')).toBe(15);
-        });
-
-        it('should handle whitespace between numbers', () => {
-            expect(calculator.add('1, 2, 3')).toBe(6);
-        });
-
-        it('should throw error for invalid character', () => {
-            expect(() => calculator.add('1,a')).toThrow('Invalid character: "a"');
-        });
-
-        it('should throw error for multiple invalid characters', () => {
-            expect(() => calculator.add('1,a,b')).toThrow('Invalid characters: "a", "b"');
-        });
-
-        it('should handle consecutive commas by ignoring empty entries', () => {
-            expect(calculator.add('1,,2')).toBe(3);
-        });
-
-        it('should handle numbers with leading zeros', () => {
-            expect(calculator.add('01,02,03')).toBe(6);
-        });
-
-        // Edge cases
-        it('should handle single digit numbers', () => {
-            expect(calculator.add('1,2,3')).toBe(6);
-        });
-
-        it('should handle multi-digit numbers', () => {
-            expect(calculator.add('10,20,30')).toBe(60);
-        });
-
-        it('should handle zero values', () => {
-            expect(calculator.add('0,0,0')).toBe(0);
-        });
-
-        it('should handle mixed single and multi-digit numbers', () => {
-            expect(calculator.add('1,20,300')).toBe(321);
-        });
+    it("should return the number for single number", () => {
+      expect(add("5")).toBe(5);
     });
+
+    it("should return sum of comma-separated numbers", () => {
+      expect(add("1,2,3")).toBe(6);
+    });
+
+    it("should handle decimals", () => {
+      expect(add("1.5,2.5,3")).toBe(7);
+    });
+  });
+
+  describe("Edge cases", () => {
+    it("should handle spaces around numbers", () => {
+      expect(add("1 , 2 , 3")).toBe(6);
+    });
+
+    it("should handle empty values between commas", () => {
+      expect(add("1,,2")).toBe(3);
+    });
+
+    it("should handle large numbers", () => {
+      expect(add("1000,2000")).toBe(3000);
+    });
+  });
+
+  describe("Error handling", () => {
+    it("should throw error for invalid input with letters", () => {
+      expect(() => add("1,a,3")).toThrow(CalculatorError);
+      expect(() => add("1,a,3")).toThrow("Invalid input detected");
+    });
+
+    it("should throw error for numbers with trailing letters", () => {
+      expect(() => add("1a,2,3")).toThrow(CalculatorError);
+      expect(() => add("1a,2,3")).toThrow('"1a" at position 1');
+    });
+
+    it("should throw error for mixed alphanumeric", () => {
+      expect(() => add("12abc,5")).toThrow(CalculatorError);
+    });
+
+    it("should throw error when no valid numbers", () => {
+      expect(() => add(",,,")).toThrow(CalculatorError);
+      expect(() => add(",,,")).toThrow("No valid numbers found");
+    });
+  });
 });
